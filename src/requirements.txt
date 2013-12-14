@@ -1,0 +1,8 @@
+Libraries required
+==================
+
+- Subversion
+  http://www.php.net/manual/en/book.svn.php
+  For debian: php5-svn
+
+-
