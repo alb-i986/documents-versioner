@@ -19,20 +19,6 @@
         $html2pdf = new HTML2PDF('P','A4','it');
         $html2pdf->WriteHTML($doc_content);
         $html2pdf->Output($doc_name.'.pdf');
-
-      /*
-
-        try {
-          $pdf = new FPDF();
-          $pdf->AddPage();
-          $pdf->SetFont('Arial','B',16);
-          $pdf->Cell(0, 0, $doc_content_plaintxt);
-          $pdf->Output($doc_name, 'D');
-        }
-        catch (Exception $e) {
-          die($e);
-        }
-        */
         break;
       
       default:

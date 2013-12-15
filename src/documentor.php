@@ -55,18 +55,22 @@
 ?>
 
   <div id="document-selector">
-    <form>
+    <form method="get" action="index.php?page=documentor">
       <label>Select document</label>
-    <select name="document">
+    <select name="doc">
 <?php
   $documents = scandir($DOCUMENTS_DIR);
   foreach ($documents as $document) {
+    $doc2load = preg_replace('/.html$/', '', $document);
 ?>
-      <option><?php echo $document ?></option>
+      <option><?php echo $doc2load ?></option>
 <?php
   }
 ?>
       </select>
+
+      <input type="submit" value="Load">
+
     </form>
     
   </div>
