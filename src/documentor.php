@@ -61,7 +61,7 @@
 <?php
   $documents = scandir($DOCUMENTS_DIR);
   foreach ($documents as $document) {
-    $doc2load = preg_replace('/.html$/', '', $document);
+    $doc2load = preg_replace('/\.html$/', '', $document);
 ?>
       <option><?php echo $doc2load ?></option>
 <?php
