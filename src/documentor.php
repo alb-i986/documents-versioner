@@ -79,7 +79,7 @@
 
   <div id="document-to-pdf">
 
-    <form method="get" action="saveto.php">
+    <form method="get" action="download.php">
       <input type="hidden" name="docname" value="<?php echo $doc_name ?>"></input>
       <input type="hidden" name="format" value="pdf"></input>
       <input type="submit" value="Save to PDF">
