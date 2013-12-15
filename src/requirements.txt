@@ -1,8 +1,29 @@
-Libraries required
-==================
+PHP Libraries dependencies
+==========================
 
-- Subversion
+- svn
   http://www.php.net/manual/en/book.svn.php
   For debian: php5-svn
 
--
+- fpdf 1.7
+  http://www.fpdf.org/
+  For debian: php-fpdf
+
+- html2pdf 4.03
+  http://html2pdf.fr/
+
+
+
+JS dependencies
+===============
+
+- tinymce 4
+  http://www.tinymce.com
+
+
+
+Other Tools
+===========
+
+- WebSVN (2.3.3)
+  http://www.websvn.info/

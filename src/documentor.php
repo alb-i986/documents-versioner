@@ -1,97 +1,111 @@
 <?php
 
-  $documents = scandir($DOCUMENTS_DIR);
+  svn_auth_set_parameter(SVN_AUTH_PARAM_DEFAULT_USERNAME, $SVN_USERNAME);
+  svn_auth_set_parameter(SVN_AUTH_PARAM_DEFAULT_PASSWORD, $SVN_PASSWORD);
 
-?>
-
-<div id="file-selection">
-  <form>
-    <label>Select document</label>
-    <select name="document">
-<?php
-  foreach ($documents as $doc_name) {
-    echo '<option>' . $doc_name . '</option>';
-  }
-
-?>
-    </select>
-  </form>
-  
-
-</div>
+  # ensure working copy is up to date
+  svn_update($DOCUMENTS_DIR);
 
 
-<?php
 
-  $save_mode = ! empty($_POST);
+
+  $save_mode = !empty($_POST) && !empty($_POST['docname']);
+
 
   if ( $save_mode ) { // write mode
 
-    $html = $_POST['content'];
-    $html_original = $_POST['content'];
-    $doc_name = $_POST['filename'];
+    $doc_name = $_POST['docname'];
+    $user_commit_msg = $_POST['commit-msg'];
     $filename = $doc_name . '.html';
-    #var_dump($filename);
-    #var_dump($html);
-    #echo "ORIGINAL BEGIN";
-    #var_dump($html_original);
-    #echo "ORIGINAL END";
-    #var_dump($DOCUMENTS_DIR . '/' . $filename);
+    $filepath = $DOCUMENTS_DIR . '/' . $filename;
+    
+    $doc_content = $_POST['content'];
+    $doc_content_original = file_get_contents($filepath);
 
-    if ($html == $html_original) {
+    if ($doc_content == $doc_content_original) {
       echo "content unchanged. not saving.";
     } else {
-      $filepath = $DOCUMENTS_DIR . '/' . $filename;
-      if ( file_put_contents($filepath, $html) ) {
+      if ( file_put_contents($filepath, $doc_content) ) {
         echo "Success. The document $doc_name has been saved.";
-        svn_auth_set_parameter(SVN_AUTH_PARAM_DEFAULT_USERNAME, $SVN_USERNAME);
-        svn_auth_set_parameter(SVN_AUTH_PARAM_DEFAULT_PASSWORD, $SVN_PASSWORD);
-        svn_add($filepath);
-        svn_commit("updating $doc_name", array($DOCUMENTS_DIR) );
+
+        $previously_unversioned = svn_add($filepath);
+        $commit_msg = ($previously_unversioned ? 'adding' : 'updating') . " $doc_name" . ( empty($user_commit_msg) ? "" : " - $user_commit_msg" );
+        if (svn_commit( $commit_msg, array(realpath($DOCUMENTS_DIR)) ) )
+          echo "Success. Changes to $doc_name have been committed.";
+        else
+          echo "Fail. Changes to $doc_name could not be committed.";
       } else {
-        echo "Fail. The document $doc_name could not be saved.";
+        echo "Fail. The file $filename could not be saved.";
       }
     }
-    
 
   } else { // read mode
 
+    $no_doc_loaded = empty($_GET['doc']);
+
     if ( ! empty($_GET['doc']) ) {
-
-      svn_update($DOCUMENTS_DIR);
-
       $doc_name = $_GET['doc'];
       $filename = $doc_name . '.html';
-      $html = file_get_contents($DOCUMENTS_DIR . '/' . $filename);
+      $filepath = $DOCUMENTS_DIR . '/' . $filename;
+      $doc_content = file_get_contents($filepath);
     }
 
   }
 
-
 ?>
+
+  <div id="document-selector">
+    <form>
+      <label>Select document</label>
+    <select name="document">
+<?php
+  $documents = scandir($DOCUMENTS_DIR);
+  foreach ($documents as $document) {
+?>
+      <option><?php echo $document ?></option>
+<?php
+  }
+?>
+      </select>
+    </form>
+    
+  </div>
+
+
+
+  <div id="document-to-pdf">
+
+    <form method="get" action="saveto.php">
+      <input type="hidden" name="docname" value="<?php echo $doc_name ?>"></input>
+      <input type="hidden" name="format" value="pdf"></input>
+      <input type="submit" value="Save to PDF">
+    </form>
+    
+  </div>
 
 
   <div id="document-editor">
     <form method="post" action="?page=documentor">
       
       <textarea name="content" id="document-content">
-        <?php echo $html ?>
+        <?php echo $doc_content ?>
       </textarea>
 
+      <label>Commit message:</label>
+      <textarea name="commit-msg" id="document-commit-msg"></textarea>
+
 <?php
-  if ( !$save_mode && ( empty($_GET['doc']) || !$html ) ) {
+    if ( !$save_mode && $no_doc_loaded ) {
 ?>
       <input type="submit" value="Save as">
-      <input type="textbox" name="filename">
-      <input type="hidden" name="original-content" value="<?php echo $html ?>"></input>
-
+      <input type="textbox" name="docname"></input>
 
 <?php
   } else {
 ?>
       <input type="submit" value="Save">
 
-      <input type="hidden" name="filename" value="<?php echo $doc_name ?>"></input>
+      <input type="hidden" name="docname" value="<?php echo $doc_name ?>"></input>
 <?php
   }
 ?>

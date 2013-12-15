@@ -5,7 +5,6 @@
 */
 
   require('../src/conf.php');
-  require( $LIBS_ROOT . '/glip/glip.php');
 
 
   if ( empty($_GET['page']) ) {
@@ -43,10 +42,11 @@
 
 
 <?php
-  $path_to_page_script = $SRC_ROOT . '/' . $page . '.php';
+  $path_to_page_script = realpath($SRC_ROOT . '/' . $page . '.php');
   if ( ! include($path_to_page_script) ){
-    echo '<h1>404 Page not found</h1>';
-    echo $path_to_page_script;
+    echo '<h1>404</h1>';
+    echo 'Page not found';
+    #echo $path_to_page_script;
   }
 ?>
 
