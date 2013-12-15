@@ -16,9 +16,13 @@
     switch ($_GET['format']) {
       
       case 'pdf':
-        $html2pdf = new HTML2PDF('P','A4','it');
-        $html2pdf->WriteHTML($doc_content);
-        $html2pdf->Output($doc_name.'.pdf');
+        try {
+          $html2pdf = new HTML2PDF('P','A4','it');
+          $html2pdf->WriteHTML($doc_content);
+          $html2pdf->Output($doc_name.'.pdf');          
+        } catch(Exception $e) {
+          echo "<b>Exception</b>: $e";
+        }
         break;
       
       default:
