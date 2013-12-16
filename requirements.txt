@@ -5,10 +5,6 @@ PHP Libraries dependencies
   http://www.php.net/manual/en/book.svn.php
   For debian: php5-svn
 
-- fpdf 1.7
-  http://www.fpdf.org/
-  For debian: php-fpdf
-
 - html2pdf 4.03
   http://html2pdf.fr/
 
@@ -17,13 +13,16 @@ PHP Libraries dependencies
 JS dependencies
 ===============
 
-- tinymce 4
+- tinymce 4.0.11
   http://www.tinymce.com
+
+- Twitter Bootstrap 3.0.3
+  http://getbootstrap.com/
 
 
 
 Other Tools
 ===========
 
-- WebSVN (2.3.3)
+- WebSVN >= 2.3.3
   http://www.websvn.info/
