@@ -67,7 +67,7 @@
 
     <div id="document-selector">
 
-      <form method="get" action="index.php?page=documentor" role="form">
+      <form method="get" action="index.php?page=edit" role="form">
 
         <label>Select document</label>
         <select name="doc" class="form-control">
@@ -98,7 +98,7 @@
 
 
     <div id="document-editor">
-      <form method="post" action="index.php?page=documentor" role="form">
+      <form method="post" action="index.php?page=edit" role="form">
 
         <textarea name="content" id="document-content" class="form-control">
           <?php echo $doc_content ?>
