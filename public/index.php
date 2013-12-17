@@ -4,7 +4,7 @@
   i.e. deals mainly with 'html' and 'head' tags
 */
 
-  require('../src/conf.php');
+  require_once('../src/conf.php');
 
 
   if ( empty($_GET['page']) ) {

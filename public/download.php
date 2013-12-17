@@ -1,6 +1,6 @@
 <?php
 
-  require('../src/conf.php');
+  require_once('../src/conf.php');
 
 
   if ( empty($_GET['format']) || empty($_GET['docname']) ) {
