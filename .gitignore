@@ -1,2 +1,5 @@
 /documents
 /libs
+/public/js/*
+/public/css/*
+/public/fonts/*
