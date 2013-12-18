@@ -10,7 +10,7 @@ PHP Libraries dependencies
 
 
 
-JS dependencies
+CSS/JS dependencies
 ===============
 
 - tinymce 4.0.11
@@ -18,6 +18,9 @@ JS dependencies
 
 - Twitter Bootstrap 3.0.3
   http://getbootstrap.com/
+
+- jQuery 1.10.2
+  http://jquery.com/download/
 
 
 
