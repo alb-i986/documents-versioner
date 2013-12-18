@@ -52,6 +52,7 @@ SVN_DEFAULT_PASSWORD="tinymce"
 
 
 ## setup 3rd party components
+mkdir -p $PROJECT_ROOT/libs $PROJECT_ROOT/public/js
 cd $PROJECT_ROOT/3rdparty &&
 unzip -qq '*.zip' &&
 mv dist/* $PROJECT_ROOT/public &&
