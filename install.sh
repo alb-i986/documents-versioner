@@ -41,6 +41,14 @@ ask_var() {
 }
 
 
+
+
+assert_we_know_where_we_are() {
+  [[ -d "$PROJECT_ROOT/public" ]] ||
+    err_exit $LINENO "Looks like we are not in the project root"
+  return 0
+}
+
 assert_port_is_available() {
   PORT=$1
   [[ $( netstat --listening --numeric --tcp | fgrep ":${PORT}" | wc -l ) = "0" ]] ||
@@ -49,88 +57,114 @@ assert_port_is_available() {
 }
 
 
+install_os_packages() {
+  echo "Going to ask you your sudo password in order to install the required packages"
+  sudo apt-get update
+  sudo apt-get -y install unzip &&
+  sudo apt-get -y install subversion apache2 php5 php5-svn &&
+  sudo service apache2 restart &&
+  return 0
 
-## check preconditions
-assert_cmd "svn"
-assert_cmd "svnserve"
-assert_cmd "svnadmin"
-assert_port_is_available 3690
+  return 1
+}
+
+setup_3rd_party_libs() {
+  rm -rf $PROJECT_ROOT/libs/*
+  rm -rf $PROJECT_ROOT/public/{js,fonts,css}
+
+  mkdir -p $PROJECT_ROOT/libs
+
+  TMP_DIR=$(mktemp -d /tmp/documents-versioner.XXXXXXXXXX)
+  cd $PROJECT_ROOT/3rdparty &&
+    unzip -qq '*.zip' -d $TMP_DIR &&
+  cd $TMP_DIR &&
+    mv dist/* $PROJECT_ROOT/public &&
+    mv tinymce/js/* $PROJECT_ROOT/public/js &&
+    mv jquery.min.js $PROJECT_ROOT/public/js &&
+    mv html2pdf_v4.03 $PROJECT_ROOT/libs/html2pdf &&
+
+  echo -e "\n - successfully setup the 3rd party libraries\n" &&
+  return 0
+
+  return 1
+}
+
+setup_svn_repo() {
+  mkdir -p $SVN_ROOT
+  svnadmin create $SVN_REPO_PATH || return 1
+  echo "$SVN_DEFAULT_USERNAME = $SVN_DEFAULT_PASSWORD" >> $SVN_REPO_PATH/conf/passwd &&
+  cat > $SVN_REPO_PATH/conf/svnserve.conf <<EOF
+[general]
+anon-access = none
+auth-access = write
+password-db = passwd
+realm = My Documents Repo
+
+EOF
+  svnserve -d -r $SVN_ROOT --listen-host=127.0.0.1 || return 1
+
+  echo -e "\n - SVN repository created in $SVN_REPO_PATH\n" &&
+  return 0
+}
+
+setup_svn_wc() {
+  #rm -rf $SVN_WC_PATH
+  svn co -q $SVN_REPO_URL $SVN_WC_PATH --username $SVN_DEFAULT_USERNAME --password $SVN_DEFAULT_PASSWORD &&
+  sudo chown -R ${WWW_USER} $SVN_WC_PATH &&
+  echo -e "\n - SVN working copy succesfully checked out in $SVN_WC_PATH\n" ||
+    err_exit $LINENO "Failed while trying to check out a WC in $SVN_WC_PATH"
+  return 0
+}
 
 
 
+
+
+## set project root var
 PROJECT_ROOT=$1
 # if no arg is given (or the path given is not a dir) then
 # we assume this script is launched from within the PROJECT_ROOT
 [[ -d "$PROJECT_ROOT" ]] || PROJECT_ROOT=$( pwd )
 
+## check preconditions
+assert_we_know_where_we_are
+assert_port_is_available 3690
+
+
+## init vars
 DOCUMENT_ROOT=$PROJECT_ROOT/public
-
-[[ -d "$DOCUMENT_ROOT" ]] || err_exit $LINENO "Assumed we are in the project root; turns out we are not"
-
-
-
-# init vars
-
 WWW_USER=www-data
-# check the existance of the expected webserver user
-id $WWW_USER >/dev/null || ask_var WWW_USER "Please enter the name of the user your web server runs as"
-
 SVN_ROOT=~/svn
-REPO_PATH=$SVN_ROOT/documents
-REPO_URL=svn://localhost/documents
+SVN_REPO_PATH=$SVN_ROOT/documents
+SVN_REPO_URL=svn://localhost/documents
 SVN_DEFAULT_USERNAME=$WWW_USER
 SVN_DEFAULT_PASSWORD="tinymce"
+SVN_WC_PATH=$PROJECT_ROOT/documents
+
+## check the existance of the expected webserver user
+id $WWW_USER >/dev/null || ask_var WWW_USER "Please enter the name of the user your web server runs as"
 
 
+## install required packages
+install_os_packages ||
+  err_exit $LINENO "install OS packages failed"
 
-## setup 3rd party components
-mkdir -p $PROJECT_ROOT/libs $PROJECT_ROOT/public/js
-cd $PROJECT_ROOT/3rdparty &&
-  unzip -qq '*.zip' &&
-  mv dist/* $PROJECT_ROOT/public &&
-  rm -rf dist &&
-  mv tinymce/js/* $PROJECT_ROOT/public/js &&
-  rm -rf tinymce
-  mv jquery.min.js $PROJECT_ROOT/public/js &&
-  mv html2pdf_v4.03 $PROJECT_ROOT/libs/html2pdf &&
-  echo -e "\n - successfully setup the 3rd party components\n" ||
-    err_exit $LINENO "Failed while trying to setup the 3rd party components"
-
-[[ -f /etc/debian_version ]] && sudo apt-get install php5-svn
-
-
+setup_3rd_party_libs ||
+  err_exit $LINENO "setting up 3rd party libs failed"
 
 ## setup the SVN repo for versioning the documents
-mkdir -p $SVN_ROOT &&
-svnadmin create $REPO_PATH &&
-echo "$SVN_DEFAULT_USERNAME = $SVN_DEFAULT_PASSWORD" >> $REPO_PATH/conf/passwd &&
-cat > $REPO_PATH/conf/svnserve.conf <<EOF
-[general]
-anon-access = none
-auth-access = write
-password-db = passwd
-realm = My Documents Repository
+setup_svn_repo ||
+  err_exit $LINENO "setting up the SVN repository in $SVN_REPO_PATH failed"
 
-EOF
-  echo -e "\n - SVN repository created in $REPO_PATH" ||
-    err_exit $LINENO "Failed while trying to setup the SVN repository in $REPO_PATH"
-
-svnserve -d -r $SVN_ROOT --listen-host=127.0.0.1 ||
-  print_err $LINENO "ERR: spawning svnserve daemon failed"
-
-
-## checkout a wc for the application
-svn co -q $REPO_URL $PROJECT_ROOT/documents --username $SVN_DEFAULT_USERNAME --password $SVN_DEFAULT_PASSWORD &&
-sudo chown -R ${WWW_USER} $PROJECT_ROOT/documents &&
-echo &&
-echo " - SVN working copy succesfully checked out in $PROJECT_ROOT/documents" ||
-  err_exit $LINENO "Failed while trying to check out a WC in $PROJECT_ROOT/documents"
+## checkout a wc to be used by documents-versioner
+setup_svn_wc ||
+  err_exit $LINENO "setting up the SVN working copy in $SVN_WC_PATH failed"
 
 
 echo
-echo "You now have:"
-echo " - a SVN repo in $REPO_PATH"
-echo " - a SVN working copy in $PROJECT_ROOT/documents"
+echo "Now you have:"
+echo " - a SVN repo in $SVN_REPO_PATH"
+echo " - a SVN working copy in $SVN_WC_PATH"
 echo
 echo "Now you should:"
 echo " - setup your web server to serve contents from the DocumentRoot: $DOCUMENT_ROOT"
