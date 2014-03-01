@@ -3,7 +3,7 @@ PHP Libraries dependencies
 
 - svn
   http://www.php.net/manual/en/book.svn.php
-  For debian: php5-svn
+  For debian/ubuntu: `php5-svn`deb package
 
 - html2pdf 4.03
   http://html2pdf.fr/
@@ -27,5 +27,5 @@ CSS/JS dependencies
 Other Tools
 ===========
 
-- WebSVN >= 2.3.3
+- WebSVN 2.3.3
   http://www.websvn.info/
