@@ -163,7 +163,7 @@ setup_svn_repo ||
 
 ## checkout a wc to be used by documents-versioner
 setup_svn_wc ||
-  err_exit $LINENO "setting up the SVN working copy failed"
+  err_exit $LINENO "setting up the SVN working copy in $SVN_WC_PATH failed"
 
 setup_websvn ||
   print_err $LINENO "setting up WebSVN failed -- continuing anyway"
