@@ -25,7 +25,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # the path on the host to the actual folder. The second argument is
   # the path on the guest to mount the folder. And the optional third
   # argument is a set of non-required options.
-  config.vm.synced_folder ".", "/var/www/documents-versioner", :owner => "www-data", :group => "www-data"
+  config.vm.synced_folder ".", "/var/www/documents-versioner", owner: "www-data", group: "www-data"
 
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
@@ -43,6 +43,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # information on available options.
 
   # setup the VM (install web server and so on) and setup our app
-  config.vm.provision :shell, :path => "vagrant_provisioner.sh", :args => "/var/www/documents-versioner"
+  config.vm.provision :shell, path: "vagrant_provisioner.sh", args: "/var/www/documents-versioner"
 
 end
