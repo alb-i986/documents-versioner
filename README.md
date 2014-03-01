@@ -49,9 +49,11 @@ The following operations will be performed:
   - install apache, PHP, subversion
   - setup a SVN repository for versioning your documents
   - setup this app
+  - setup WebSVN
 
 The final result will be an ubuntu VM running in the background.
 To start playing with the app you just need to open your favorite browser and go to http://127.0.0.1:8080/documents-versioner/public.
+You may also browse the repository at http://127.0.0.1:8080/websvn.
 
 For those of you who do not know [Vagrant](http://www.vagrantup.com), I highly recommend to have a look at it and give it a try.
 It's a simple but powerful command-line tool that acts as an interface to VirtualBox (amongst other hypervisors), making the process of provisioning local VMs straightforward.
