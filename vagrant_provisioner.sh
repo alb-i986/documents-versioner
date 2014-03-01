@@ -81,6 +81,21 @@ setup_3rd_party_libs() {
   return 1
 }
 
+setup_websvn() {
+  cd /var/www &&
+    #wget http://websvn.tigris.org/files/documents/1380/49056/websvn-2.3.3.tar.gz &&
+    tar xzf $PROJECT_ROOT/3rdparty/websvn-2.3.3.tar.gz &&
+    mv websvn-2.3.3 websvn &&
+    cd websvn &&
+      chown -R $WWW_USER:$WWW_USER cache/ &&
+      cd include &&
+        cp distconfig.php config.php &&
+        echo "\$config->addRepository('Documents', 'svn://localhost/documents', null, '$SVN_DEFAULT_USERNAME', '$SVN_DEFAULT_PASSWORD');" >> config.php &&
+  return 0
+
+  return 1
+}
+
 setup_svn_repo() {
   mkdir -p $SVN_ROOT
   svnadmin create $SVN_REPO_PATH || return 1
@@ -150,6 +165,9 @@ setup_svn_repo ||
 setup_svn_wc ||
   err_exit $LINENO "setting up the SVN working copy failed"
 
+setup_websvn ||
+  print_err $LINENO "setting up WebSVN failed -- continuing anyway"
+
 
 echo
 echo "Now you have:"
@@ -161,6 +179,10 @@ echo "You are now ready to play with the app by browsing to"
 echo "(on your local machine, not this VM)"
 echo
 echo "   http://127.0.0.1:8080/documents-versioner/public/"
+echo
+echo "You can also browse the repository at"
+echo
+echo "   http://127.0.0.1:8080/websvn/"
 echo
 
 exit 0
