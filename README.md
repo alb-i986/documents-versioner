@@ -6,7 +6,7 @@ A simple web UI for versioning documents, exploiting SVN and TinyMCE.
 A document is saved in the repository as an HTML document, but the format is transparent to the user as he/she interacts with TinyMCE, a WYSIWYG editor which happens to save the edited text as HTML.
 
 
-# Components
+## Components
 
 - TinyMCE as WYSIWYG editor
 - SVN as VCS
@@ -15,14 +15,14 @@ A document is saved in the repository as an HTML document, but the format is tra
 
 
 
-# Features
+## Features
 
 - create/edit versioned HTML documents (only @HEAD at the moment)
 - save documents as PDF
 
 
 
-# Directory Structure
+## Directory Structure
 
 - documents/: the working copy with the versioned documents
 - libs/: 3rd party libraries
@@ -32,9 +32,9 @@ A document is saved in the repository as an HTML document, but the format is tra
 
 
 
-# Setup
+## Setup
 
-## Vagrantfile
+### Vagrantfile
 
 For a straightforward hassle-free setup of the app, there's a `Vagrantfile` for you, guys.
 
@@ -57,7 +57,7 @@ For those of you who do not know [Vagrant](http://www.vagrantup.com), I highly r
 It's a simple but powerful command-line tool that acts as an interface to VirtualBox (amongst other hypervisors), making the process of provisioning local VMs straightforward.
 
 
-## Local setup (only for Debian-like systems)
+### Local setup (only for Debian-like systems)
 
 Though Vagrantfile is the recommended setup method, there's also a Bash script for Debian systems.
 Just run `./install.sh`, enter your sudo password when asked, and eventually you will have the app setup.
