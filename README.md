@@ -21,6 +21,20 @@ A document is saved in the repository as an HTML document, but the format is tra
 - save documents as PDF
 
 
+## Screenshots
+
+
+![sc1](http://s2.postimg.org/bkwyx8g15/Screen_Shot_2015_03_29_at_22_53_35.png)
+
+Every time you save a document, it is internally saved as HTML, and your change is committed to a subversion repository.
+
+![sc2](http://s2.postimg.org/ktz57cox5/Screen_Shot_2015_03_29_at_22_54_21.png)
+
+Saved documents can then be loaded. Below, I’ve just loaded my document ‘asd’. Once loaded, you can amend your document and then save it again.
+
+![sc3](http://s14.postimg.org/3xu000hdt/Screen_Shot_2015_03_29_at_23_00_00.png)
+
+
 
 ## Directory Structure
 
